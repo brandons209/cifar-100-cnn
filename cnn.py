@@ -13,3 +13,4 @@ from keras import optimizers as opt
 train, test = help.load_data()
 
 print(len(train))
+print(test)
