@@ -11,7 +11,9 @@ I used the Keras deep learning library with the TensorFlow back end, and of cour
 
 ### Model Architecture
 This model consists of 3 convolutional layers followed by a max pooling layer, then another 4 convolutional layers followed by another max pooling layer. Padding for all the layers was set to "same", which means they were zero-padded. The classifier layers has one dense hidden layer followed by the output layer to predict the classes with probabilities.    
+
 Dropout was added after the first block, after the fourth convolution layer in the second block, after the second block, and after the first hidden layer in the classifier dense layer to help with over fitting.    
+
 Activation functions of all layers was the ReLu function, except the last output layer, which had a softmax activation for probability predictions.
 
 ### Running the Model
@@ -20,7 +22,12 @@ Activation functions of all layers was the ReLu function, except the last output
 pip install -r requirements.txt
 ```
 2. Change hyperparameters as needed under the hyperparameters section in cnn.py.
-
+```python
+#set hyperparameters
+learn_rate = 0.001
+epochs = 30
+batch_size = 64
+```
 3. (Optional) If you want to view the graphs for loss and accuracy with TensorBoard, run:
 ```bash
 tensorboard --logdir=tensorboard_logs
