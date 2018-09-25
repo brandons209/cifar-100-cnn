@@ -37,3 +37,6 @@ tensorboard --logdir=tensorboard_logs
 ```bash
 python cnn.py
 ```
+
+### Performance
+I was able to score 47% validation and testing accuracy when training this model on 45,000 images. It only took about 40 minutes to train. Being able to predict between 100 different objects on 40 minutes of training on this relatively small network with nearly 50% accuracy is a great start to this model structure. I suspect that that taking 5000 images from testing and put it with the original 50,000 images for the training, leaving 55,000 images for training, 2500 for validation and testing sets, while also adding 3 to 4 more "blocks" of convolutional and max pooling layers that I can push 60-65% accuracy.
