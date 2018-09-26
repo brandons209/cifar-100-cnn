@@ -71,11 +71,13 @@ def plot_data(raw_data, legend_title, time_x_title, time_x_range, model_or_data_
 #creates a new figure for each plot.
 def plot_data(raw_data, legend_title, time_x_title, time_x_range, model_or_data_size):
     sizes_metric = []
-    losses = []
+    top_5_train_accuracy = []
+    top_5_valid_accuracy = []
     val_losses = []
     time_taken = []
     for run in raw_data:#extracts metrics from the raw data and appends them to lists
-        losses.append(run[0]['loss'])
+        top_5_train_accuracy.append(run[0]['sparse_top_k_categorical_accuracy'])
+        top_5_valid_accuracy.append(run[0]['val_sparse_top_k_categorical_accuracy'])
         val_losses.append(run[0]['val_loss'])
         time_taken.append(run[1]['train_time']/60)
         if model_or_data_size:
@@ -83,14 +85,23 @@ def plot_data(raw_data, legend_title, time_x_title, time_x_range, model_or_data_
         else:
             sizes_metric.append(run[2]['params'])
 
-    epochs = len(losses[0])
+    epochs = len(top_5_train_accuracy[0])
     index_epochs = np.arange(epochs) + 1
 
     plt.figure(figsize=(10,10))
-    for i, size in enumerate(sizes_metric):#plot training loss for all runs
-        plot_graph(index_epochs, losses[i], "Epochs", "Training Loss", str(sizes_metric[i]), "Training Loss vs. Epochs", 3)
+    for i, size in enumerate(sizes_metric):#plot Top 5 training accuracy for all runs
+        plot_graph(index_epochs, top_5_train_accuracy[i], "Epochs", "Top 5 Training Accuracy", str(sizes_metric[i]), "Top 5 Training Accuracy vs. Epochs", 3)
         plt.xticks(index_epochs)
-        plt.yticks(np.linspace(0, 5, num=10))
+        plt.yticks(np.linspace(0, 1, num=10))
+        plt.legend(title=legend_title)
+
+    plt.show()
+
+    plt.figure(figsize=(10,10))
+    for i, size in enumerate(sizes_metric):#plot top 5 validation accuracy for all runs
+        plot_graph(index_epochs, top_5_valid_accuracy[i], "Epochs", "Top 5 Validation Accuracy", str(sizes_metric[i]), "Top 5 Validation Accuracy vs. Epochs", 3)
+        plt.xticks(index_epochs)
+        plt.yticks(np.linspace(0, 1, num=10))
         plt.legend(title=legend_title)
 
     plt.show()

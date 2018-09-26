@@ -18,11 +18,12 @@ from keras import optimizers as opt
 
 #load cifar100 images with fine labels.
 (train_images, train_labels), (test_images, test_labels) = cifar100.load_data(label_mode='fine')
+#flatten labels from (num_samples, 1) to (num_samples,), this is for the sparse_top_k_categorical_accuracy metric
+train_labels, test_labels = train_labels.flatten(), test_labels.flatten()
 #take last 5000 images and labels for validation set
 valid_images, valid_labels = train_images[:5000], train_labels[:5000]
 #remove validation set from training data
 train_images, train_labels = train_images[5000:], train_labels[5000:]
-
 #change size of training dataset
 #train_images, train_labels = train_images[:36000], train_labels[:36000]
 
@@ -84,8 +85,8 @@ learn_rate = 0.001
 epochs = 30
 batch_size = 64
 
-#I use sparse_categorical_crossentropy loss function since it works like categorical_crossentropy but the labels do not have to be one-hot encoded, saving computation time. I use the Adam optimizer and include metrics for accuracy as well.
-cnn.compile(loss='sparse_categorical_crossentropy', optimizer=opt.Adam(lr=learn_rate), metrics=['accuracy'])
+#I use sparse_categorical_crossentropy loss function since it works like categorical_crossentropy but the labels do not have to be one-hot encoded, saving computation time. I use the Adam optimizer and include metrics for accuracy and sparse_top-5 error as well.
+cnn.compile(loss='sparse_categorical_crossentropy', optimizer=opt.Adam(lr=learn_rate), metrics=['accuracy', 'sparse_top_k_categorical_accuracy'])
 
 #train model:
 print("TensorBoard logs are viewable in the tensorboard_logs directory, this log folder will be written as: {}".format(start_time + '_cnn'))
@@ -101,16 +102,17 @@ input("Press enter to test model...")
 #test model
 cnn.load_weights(weight_save_path)
 metrics = cnn.evaluate(test_images, test_labels)
-print("Testing loss: {:.4f}, Testing accuracy: {:.2f}%".format(metrics[0], metrics[1]*100))
+print("Testing loss: {:.4f}, Testing accuracy: {:.2f}%, Top 5 Error Accuracy: {:.2f}%".format(metrics[0], metrics[1]*100, metrics[2]*100))
 
 #save history for graphing purposes:
-#print("Saving data...")
+print("Saving data...")
+cnn.save('saved_models/test')
 #with open('saved_history_data/largest-dataset-size/network_4', 'wb') as file:
 #    timedict = {"train_time" : time_to_train}
 #    paramsdict = {"params" : int(np.sum([K.count_params(p) for p in set(cnn.trainable_weights)]))}
 #    dicts = [history.history, timedict, paramsdict]
 #    pickle.dump(dicts, file)
-#with open('saved_history_data/largest-network-size/network_4', 'wb') as file:
+#with open('saved_history_data/largest-network-size/network_5', 'wb') as file:
 #    timedict = {"train_time" : time_to_train}
 #    paramsdict = {"params" : len(train_images)}
 #    dicts = [history.history, timedict, paramsdict]
